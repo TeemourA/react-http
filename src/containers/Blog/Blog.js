@@ -9,34 +9,48 @@ import './Blog.css';
 class Blog extends Component {
   state = {
     posts: [],
+    selectedPostId: null,
+    error: false,
   }
 
   componentDidMount() {
-    axios.get('https://jsonplaceholder.typicode.com/posts')
+    axios.get('/posts')
       .then(res => {
         const posts = res.data.slice(0, 4);
-        const updatedPosts = posts.map(post => ({...post, author: 'Max'}));
+        const updatedPosts = posts.map(post => ({ ...post, author: 'Max' }));
         this.setState({
           posts: updatedPosts,
         });
-      });
+      })
+      .catch(err => this.setState({
+        error: true,
+      }));
+  }
+
+  postSelectedHandler = (id) => {
+    this.setState({
+      selectedPostId: id,
+    });
   }
 
   render() {
-    const posts = this.state.posts.map(post => 
-    <Post 
-      key={post.id}
-      title={post.title} 
-      author={post.author}
-      />);
+    const posts = this.state.posts.map(post => {
+      return <Post
+        key={post.id}
+        title={post.title}
+        author={post.author}
+        clicked={() => this.postSelectedHandler(post.id)}
+      />
+    });
+
 
     return (
       <div>
         <section className="Posts">
-          {posts}
+          {this.state.error ? <p style={{textAlign: 'center'}}>Error has occured and no posts avaliable at the moment</p> : posts}
         </section>
         <section>
-          <FullPost />
+          <FullPost id={this.state.selectedPostId} />
         </section>
         <section>
           <NewPost />

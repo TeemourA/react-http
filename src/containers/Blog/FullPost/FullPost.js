@@ -10,19 +10,27 @@ class FullPost extends Component {
 
   componentDidMount() {
     console.log(this.props);
-    if (this.props.match.params.id) {
-      if (!this.state.lodadedPost || (this.state.lodadedPost && this.state.lodadedPost.id !== this.props.match.params.id)) {
-        axios.get(`/posts/${this.props.match.params.id}`)
-          .then(res => this.setState({
-            lodadedPost: res.data
-          }));
-      }
-    } 
+    this.loadData();
+  }
+
+  componentDidUpdate() {
+    this.loadData();
   }
 
   deletePostHandler = () => {
     axios.delete(`/posts/${this.props.match.params.id}`)
       .then(res => console.log(res));
+  }
+
+  loadData() {
+    if (this.props.match.params.id) {
+      if (!this.state.lodadedPost || (this.state.lodadedPost && this.state.lodadedPost.id !== Number(this.props.match.params.id))) {
+        axios.get(`/posts/${this.props.match.params.id}`)
+          .then(res => this.setState({
+            lodadedPost: res.data
+          }));
+      }
+    }
   }
 
   render() {
